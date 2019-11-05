@@ -1,12 +1,14 @@
-import { Reflection, ReflectionKind } from "typedoc/dist/lib/models/reflections/abstract";
+import { Reflection, ReflectionKind, ReflectionFlag } from "typedoc/dist/lib/models/reflections/abstract";
 import { DeclarationReflection } from "typedoc/dist/lib/models/reflections/declaration";
 import { Component, ConverterComponent } from "typedoc/dist/lib/converter/components";
 import { Converter } from "typedoc/dist/lib/converter/converter";
 import { Context } from "typedoc/dist/lib/converter/context";
 import { CommentPlugin } from "typedoc/dist/lib/converter/plugins/CommentPlugin";
 import { ContainerReflection } from "typedoc/dist/lib/models/reflections/container";
-import { getRawComment } from "typedoc/dist/lib/converter/factories/comment";
+import { getRawComment, parseComment } from "typedoc/dist/lib/converter/factories/comment";
 import { Comment } from "typedoc/dist/lib/models";
+import { ModuleConverter } from "./moduleConverter";
+import * as ts from "typescript";
 
 /**
  * This plugin allows an ES6 module to specify its TypeDoc name.
@@ -37,14 +39,13 @@ import { Comment } from "typedoc/dist/lib/models";
 @Component({ name: "custom-modules" })
 export class CustomModulesPlugin extends ConverterComponent {
   private static readonly SUPPORTED_REFLECTIONS = [ReflectionKind.ClassOrInterface, ReflectionKind.FunctionOrMethod];
-  /** List of module reflections which are models to rename */
-  private moduleRenames: ModuleRename[];
-  private moduleDeclarations: ModuleDeclaration[];
+
+  private _converter: ModuleConverter;
 
   initialize() {
     this.listenTo(this.owner, {
       [Converter.EVENT_BEGIN]: this.onBegin,
-      // [Converter.EVENT_CREATE_DECLARATION]: this.onDeclaration,
+      [Converter.EVENT_CREATE_DECLARATION]: this.onDeclaration,
       [Converter.EVENT_RESOLVE]: this.onResolve,
       [Converter.EVENT_RESOLVE_END]: this.onResolveEnd
     });
@@ -56,8 +57,7 @@ export class CustomModulesPlugin extends ConverterComponent {
    * @param context  The context object describing the current state the converter is in.
    */
   private onBegin(context: Context) {
-    this.moduleRenames = [];
-    this.moduleDeclarations = [];
+    this._converter = new ModuleConverter();
   }
 
   /**
@@ -67,26 +67,27 @@ export class CustomModulesPlugin extends ConverterComponent {
    * @param reflection  The reflection that is currently processed.
    * @param node  The node that is currently processed if available.
    */
-  private onDeclaration(context: Context, reflection: Reflection, node?) {
-    if (reflection.kindOf(ReflectionKind.ExternalModule)) {
-      let comment = getRawComment(node);
-      // Look for @module
-      let match = /@module\s+([\w\u4e00-\u9fa5\.\-_/@"]+)/.exec(comment);
-      if (match) {
-        // Look for @preferred
-        let preferred = /@preferred/.exec(comment);
-        // Set up a list of renames operations to perform when the resolve phase starts
-        this.moduleRenames.push({
-          renameTo: match[1],
-          preferred: preferred != null,
-          reflection: reflection as ContainerReflection
-        });
-      }
-    }
+  private onDeclaration(context: Context, reflection: Reflection, node?: ts.Node) {
+    if (reflection.kindOf(ReflectionKind.ExternalModule) && node) {
+      let comment = parseComment(node.getSourceFile().text);
+      if (comment != null && comment.hasTag("moduledefinition")) {
+        let tag = comment.getTag("moduledefinition");
+        // The module name doesn't actually get parsed properly by `parseComment`,
+        // you end up with the actual code after the comment block ends as well.
+        // To work around this, look for a newline character and grab everything
+        // before it.
+        let match = /(.+)?[\n\r]?/.exec(tag.text);
 
-    if (reflection.comment) {
-      CommentPlugin.removeTags(reflection.comment, "module");
-      CommentPlugin.removeTags(reflection.comment, "preferred");
+        CommentPlugin.removeTags(comment, "moduledefinition");
+
+        if (match != null && match.length >= 1) {
+          this._converter.addDefinition({
+            name: match[1],
+            comment,
+            reflection: reflection as ContainerReflection
+          });
+        }
+      }
     }
   }
 
@@ -105,7 +106,7 @@ export class CustomModulesPlugin extends ConverterComponent {
   private onResolve(context: Context, reflection: DeclarationReflection) {
     let moduleName = this._getTaggedModule(reflection);
     if (moduleName != null) {
-      this.moduleDeclarations.push({
+      this._converter.addDeclaration({
         moduleName,
         reflection
       });
@@ -158,98 +159,81 @@ export class CustomModulesPlugin extends ConverterComponent {
    * @param context  The context object describing the current state the converter is in.
    */
   private onResolveEnd(context: Context) {
-    let projRefs = context.project.reflections;
-    let refsArray: Reflection[] = Object.keys(projRefs).reduce((m, k) => {
-      m.push(projRefs[k]);
-      return m;
-    }, []);
+    this._converter.collectProjectReflections(context);
 
-    this.moduleDeclarations.forEach(moduleDeclaration => {
-      console.log(moduleDeclaration.moduleName);
-    });
+    this._converter.convertDeclarations(context);
   }
 
-  private oldOnBeginResolve(context: Context) {
-    let projRefs = context.project.reflections;
-    let refsArray: Reflection[] = Object.keys(projRefs).reduce((m, k) => {
-      m.push(projRefs[k]);
-      return m;
-    }, []);
+  // private oldOnBeginResolve(context: Context) {
+  //   let projRefs = context.project.reflections;
+  //   let refsArray: Reflection[] = Object.keys(projRefs).reduce((m, k) => {
+  //     m.push(projRefs[k]);
+  //     return m;
+  //   }, []);
 
-    // Process each rename
-    this.moduleRenames.forEach(item => {
-      let renaming = item.reflection;
+  //   // Process each rename
+  //   this.moduleRenames.forEach(item => {
+  //     let renaming = item.reflection;
 
-      // Find or create the module tree until the child's parent (each level is separated by .)
-      let nameParts = item.renameTo.split(".");
-      let parent: ContainerReflection = context.project;
-      for (let i = 0; i < nameParts.length - 1; ++i) {
-        let child: DeclarationReflection = parent.children.filter(ref => ref.name === nameParts[i])[0];
-        if (!child) {
-          child = new DeclarationReflection(nameParts[i], ReflectionKind.ExternalModule, parent);
-          child.parent = parent;
-          child.children = [];
-          context.project.reflections[child.id] = child;
-          parent.children.push(child);
-        }
-        parent = child;
-      }
+  //     // Find or create the module tree until the child's parent (each level is separated by .)
+  //     let nameParts = item.renameTo.split(".");
+  //     let parent: ContainerReflection = context.project;
+  //     for (let i = 0; i < nameParts.length - 1; ++i) {
+  //       let child: DeclarationReflection = parent.children.filter(ref => ref.name === nameParts[i])[0];
+  //       if (!child) {
+  //         child = new DeclarationReflection(nameParts[i], ReflectionKind.ExternalModule, parent);
+  //         child.parent = parent;
+  //         child.children = [];
+  //         context.project.reflections[child.id] = child;
+  //         parent.children.push(child);
+  //       }
+  //       parent = child;
+  //     }
 
-      // Find an existing module with the child's name in the last parent. Use it as the merge target.
-      let mergeTarget = parent.children.filter(
-        ref => ref.kind === renaming.kind && ref.name === nameParts[nameParts.length - 1]
-      )[0] as ContainerReflection;
+  //     // Find an existing module with the child's name in the last parent. Use it as the merge target.
+  //     let mergeTarget = parent.children.filter(
+  //       ref => ref.kind === renaming.kind && ref.name === nameParts[nameParts.length - 1]
+  //     )[0] as ContainerReflection;
 
-      // If there wasn't a merge target, change the name of the current module, connect it to the right parent and exit.
-      if (!mergeTarget) {
-        renaming.name = nameParts[nameParts.length - 1];
-        let oldParent = renaming.parent as ContainerReflection;
-        for (let i = 0; i < oldParent.children.length; ++i) {
-          if (oldParent.children[i] === renaming) {
-            oldParent.children.splice(i, 1);
-            break;
-          }
-        }
-        item.reflection.parent = parent;
-        parent.children.push(renaming as DeclarationReflection);
-        return;
-      }
+  //     // If there wasn't a merge target, change the name of the current module, connect it to the right parent and exit.
+  //     if (!mergeTarget) {
+  //       renaming.name = nameParts[nameParts.length - 1];
+  //       let oldParent = renaming.parent as ContainerReflection;
+  //       for (let i = 0; i < oldParent.children.length; ++i) {
+  //         if (oldParent.children[i] === renaming) {
+  //           oldParent.children.splice(i, 1);
+  //           break;
+  //         }
+  //       }
+  //       item.reflection.parent = parent;
+  //       parent.children.push(renaming as DeclarationReflection);
+  //       return;
+  //     }
 
-      if (!mergeTarget.children) {
-        mergeTarget.children = [];
-      }
+  //     if (!mergeTarget.children) {
+  //       mergeTarget.children = [];
+  //     }
 
-      // Since there is a merge target, relocate all the renaming module's children to the mergeTarget.
-      let childrenOfRenamed = refsArray.filter(ref => ref.parent === renaming);
-      childrenOfRenamed.forEach((ref: Reflection) => {
-        // update links in both directions
-        ref.parent = mergeTarget;
-        mergeTarget.children.push(ref as any);
-      });
+  //     // Since there is a merge target, relocate all the renaming module's children to the mergeTarget.
+  //     let childrenOfRenamed = refsArray.filter(ref => ref.parent === renaming);
+  //     childrenOfRenamed.forEach((ref: Reflection) => {
+  //       // update links in both directions
+  //       ref.parent = mergeTarget;
+  //       mergeTarget.children.push(ref as any);
+  //     });
 
-      // If @preferred was found on the current item, update the mergeTarget's comment
-      // with comment from the renaming module
-      if (item.preferred) mergeTarget.comment = renaming.comment;
+  //     // If @preferred was found on the current item, update the mergeTarget's comment
+  //     // with comment from the renaming module
+  //     if (item.preferred) mergeTarget.comment = renaming.comment;
 
-      // Now that all the children have been relocated to the mergeTarget, delete the empty module
-      // Make sure the module being renamed doesn't have children, or they will be deleted
-      if (renaming.children) renaming.children.length = 0;
-      CommentPlugin.removeReflection(context.project, renaming);
+  //     // Now that all the children have been relocated to the mergeTarget, delete the empty module
+  //     // Make sure the module being renamed doesn't have children, or they will be deleted
+  //     if (renaming.children) renaming.children.length = 0;
+  //     CommentPlugin.removeReflection(context.project, renaming);
 
-      // Remove @module and @preferred from the comment, if found.
-      CommentPlugin.removeTags(mergeTarget.comment, "module");
-      CommentPlugin.removeTags(mergeTarget.comment, "preferred");
-    });
-  }
-}
-
-interface ModuleRename {
-  renameTo: string;
-  preferred: boolean;
-  reflection: ContainerReflection;
-}
-
-interface ModuleDeclaration {
-  moduleName: string;
-  reflection: DeclarationReflection;
+  //     // Remove @module and @preferred from the comment, if found.
+  //     CommentPlugin.removeTags(mergeTarget.comment, "module");
+  //     CommentPlugin.removeTags(mergeTarget.comment, "preferred");
+  //   });
+  // }
 }

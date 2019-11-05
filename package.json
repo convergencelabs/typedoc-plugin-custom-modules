@@ -34,8 +34,7 @@
     "mocha": "^6.2.2",
     "rimraf": "^3.0.0",
     "tslint": "^6.0.0-beta0",
-    "typedoc": "^0.15.0",
+    "typedoc": "file:../third-party/typedoc",
     "typescript": "3.6.x"
-  },
-  "dependencies": {}
+  }
 }
