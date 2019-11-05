@@ -1,0 +1,41 @@
+{
+  "name": "@convergencelabs/typedoc-plugin-custom-modules",
+  "version": "0.1.0",
+  "description": "Declare modules of all your exports using a @module annotation",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "clean": "rimraf dist",
+    "test": "npm run test:clean && npm run test:run",
+    "test:run": "typedoc --options test/typedoc.js test/example1",
+    "test:clean": "rimraf test/dist",
+    "test:link-self": "node ./tasks/link-plugin.js",
+    "test:prepare": "npm run build && npm run test:clean && npm run test:link-self",
+    "release": "release",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist/"
+  ],
+  "keywords": [
+    "typedocplugin",
+    "typedoc"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/christopherthielen/typedoc-plugin-external-module-name"
+  },
+  "author": "Alec LaLonde",
+  "license": "MIT",
+  "peerDependencies": {
+    "typedoc": ">=0.15.0"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.2",
+    "rimraf": "^3.0.0",
+    "tslint": "^6.0.0-beta0",
+    "typedoc": "^0.15.0",
+    "typescript": "3.6.x"
+  },
+  "dependencies": {}
+}
