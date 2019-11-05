@@ -77,8 +77,6 @@ export class ModuleConverter {
 
       currentDeclaration.parent = moduleReflection;
       moduleReflection.children.push(currentDeclaration);
-
-      CommentPlugin.removeTags(currentDeclaration.comment, "module");
     });
   }
 

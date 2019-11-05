@@ -1,6 +1,8 @@
 import { SomeParams } from "./nested";
 
 /**
+ * Let's just add a comment to this one.
+ *
  * @module Module 1
  */
 export function decorate(obj: SomeParams): SomeParams {

@@ -120,7 +120,7 @@ export class CustomModulesPlugin extends ConverterComponent {
         case ReflectionKind.Function: {
           for (let signature of reflection.getAllSignatures()) {
             if (signature.hasComment()) {
-              let signatureModule = this._getModuleName(signature.comment);
+              let signatureModule = this._stripModuleTag(signature);
               if (signatureModule != null) {
                 moduleName = signatureModule;
                 break;
@@ -131,20 +131,33 @@ export class CustomModulesPlugin extends ConverterComponent {
         }
         default:
           if (reflection.hasComment()) {
-            moduleName = this._getModuleName(reflection.comment);
+            moduleName = this._stripModuleTag(reflection);
           }
       }
     }
     return moduleName;
   }
 
-  private _getModuleName(comment: Comment): string | undefined {
+  private _stripModuleTag(reflection: Reflection): string | undefined {
+    let comment = reflection.comment;
+    let moduleName;
     if (comment.hasTag("module")) {
-      let moduleName = comment.getTag("module").text;
-      if (moduleName != null && moduleName.trim().length > 0) {
-        return moduleName.trim();
+      let moduleText = comment.getTag("module").text;
+      if (moduleText != null && moduleText.trim().length > 0) {
+        moduleName = moduleText.trim();
       }
     }
+
+    // remove the @module tag. If this makes the comment empty, delete it
+    // as well.
+    if (moduleName) {
+      CommentPlugin.removeTags(comment, "module");
+      if (comment.shortText == null || comment.shortText.length === 0) {
+        delete reflection.comment;
+      }
+    }
+
+    return moduleName;
   }
 
   /**
