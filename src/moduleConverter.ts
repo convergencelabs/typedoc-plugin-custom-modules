@@ -73,10 +73,9 @@ export class ModuleConverter {
         }
       }
 
-      this._removeFromAllContainers(context, currentDeclaration);
+      this._removeDeclarationsFromAllContainers(context, currentDeclaration);
 
-      currentDeclaration.parent = moduleReflection;
-      moduleReflection.children.push(currentDeclaration);
+      this._moveDeclarationTo(currentDeclaration, moduleReflection);
     });
   }
 
@@ -99,7 +98,7 @@ export class ModuleConverter {
     return matchedReflection;
   }
 
-  private _removeFromAllContainers(context: Context, declaration: DeclarationReflection): void {
+  private _removeDeclarationsFromAllContainers(context: Context, declaration: DeclarationReflection): void {
     let topLevelContainers = context.project.children;
 
     // Loop through these backwards since we may be changing the indices
@@ -131,6 +130,23 @@ export class ModuleConverter {
       // is just a duplicate of the original declaration.
       return child.id === toFind.id || child.renames === toFind.id;
     });
+  }
+
+  private _moveDeclarationTo(declaration: DeclarationReflection, newContainer: ContainerReflection): void {
+    declaration.parent = newContainer;
+    newContainer.children.push(declaration);
+
+    // Also, find any grouped declarations that were just pointers to this one,
+    // And fix the pointer
+    let containerGroup = newContainer.groups.find(g => g.kind === declaration.kind);
+    if (containerGroup) {
+      let pointerIndex = containerGroup.children.findIndex(
+        (child: DeclarationReflection) => child.renames === declaration.id
+      );
+      if (pointerIndex >= 0) {
+        containerGroup.children.splice(pointerIndex, 1, declaration);
+      }
+    }
   }
 }
 

@@ -18,6 +18,7 @@ TODO
 - look at typedoc #801 branch to see if re-exporting functions is broken.
 - support instances where a `@moduledefinition` is placed somewhere other than a `ContainerReflection` (is this possible??)
 - test `@moduledefinition` in a file with import statements above the comment
+- report to typedoc that exporting object literals is currently broken
 
 Nice-to-haves:
 
