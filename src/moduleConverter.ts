@@ -3,8 +3,8 @@ import { DeclarationReflection } from "typedoc/dist/lib/models/reflections/decla
 import { Comment } from "typedoc/dist/lib/models";
 import { Context } from "typedoc/dist/lib/converter/context";
 import { Reflection, ReflectionKind, ReflectionFlag } from "typedoc/dist/lib/models/reflections/abstract";
-import { ModuleDeclaration } from "./moduleConverter";
 import { CommentPlugin } from "typedoc/dist/lib/converter/plugins/CommentPlugin";
+import { GroupPlugin } from "typedoc/dist/lib/converter/plugins";
 
 export class ModuleConverter {
   /** List of module reflections which are models to rename */
@@ -136,16 +136,32 @@ export class ModuleConverter {
     declaration.parent = newContainer;
     newContainer.children.push(declaration);
 
-    // Also, find any grouped declarations that were just pointers to this one,
-    // And fix the pointer
+    // Make sure that this declaration is in one of the container's groups
+
+    if (!newContainer.groups) {
+      newContainer.groups = [];
+    }
+
     let containerGroup = newContainer.groups.find(g => g.kind === declaration.kind);
     if (containerGroup) {
+      // Find any grouped declarations that were just pointers to this one,
+      // and replace the pointer with the original
       let pointerIndex = containerGroup.children.findIndex(
         (child: DeclarationReflection) => child.renames === declaration.id
       );
       if (pointerIndex >= 0) {
         containerGroup.children.splice(pointerIndex, 1, declaration);
+      } else {
+        // If this declaration isn't yet in the group, add it
+        let isInGroup = containerGroup.children.some(c => c.id === declaration.id);
+        if (!isInGroup) {
+          containerGroup.children.push(declaration);
+        }
       }
+    } else {
+      // Create a new group with this declaration in it.
+      containerGroup = GroupPlugin.getReflectionGroups([declaration])[0];
+      newContainer.groups.push(containerGroup);
     }
   }
 }

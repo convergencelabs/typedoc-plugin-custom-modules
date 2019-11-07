@@ -6,13 +6,12 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rimraf dist",
-    "test": "npm run test:clean && npm run test:run",
-    "test:run": "typedoc --options test/typedoc.js test/example1",
+    "postinstall": "npm run build",
+    "test": "npm run test:prepare && npm run test:run",
+    "test:run": "mocha --no-timeouts --require ts-node/register test/**/*.spec.ts",
     "test:clean": "rimraf test/dist",
     "test:link-self": "node ./tasks/link-plugin.js",
-    "test:prepare": "npm run build && npm run test:clean && npm run test:link-self",
-    "release": "release",
-    "prepublishOnly": "npm run build"
+    "test:prepare": "npm run build && npm run test:clean && npm run test:link-self"
   },
   "files": [
     "dist/"
@@ -23,7 +22,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/christopherthielen/typedoc-plugin-external-module-name"
+    "url": "https://github.com/@convergencelabs/typedoc-plugin-custom-modules"
   },
   "author": "Alec LaLonde",
   "license": "MIT",
@@ -31,10 +30,13 @@
     "typedoc": ">=0.15.0"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.6",
     "mocha": "^6.2.2",
     "rimraf": "^3.0.0",
+    "ts-node": "^8.4.1",
     "tslint": "^6.0.0-beta0",
-    "typedoc": "file:../third-party/typedoc",
+    "typedoc": ">0.15.0",
     "typescript": "3.6.x"
   }
 }
