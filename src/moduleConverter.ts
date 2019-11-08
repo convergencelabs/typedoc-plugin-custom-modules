@@ -9,26 +9,18 @@ import { GroupPlugin } from "typedoc/dist/lib/converter/plugins";
 export class ModuleConverter {
   /** List of module reflections which are models to rename */
   private _moduleDefinitions: ModuleDefinition[];
-  private _moduleDeclarations: ModuleDeclaration[];
+  private _moduleDeclarations: { [reflectionId: string]: ModuleDeclaration };
 
   private _projectReflections: Reflection[];
   private _context: Context;
 
   constructor(context: Context) {
     this._moduleDefinitions = [];
-    this._moduleDeclarations = [];
+    this._moduleDeclarations = {};
     this._context = context;
   }
 
-  public get moduleDeclarations(): ModuleDeclaration[] {
-    return this._moduleDeclarations;
-  }
-
-  public get moduleDefinitions(): ModuleDefinition[] {
-    return this._moduleDefinitions;
-  }
-
-  public get _project(): ProjectReflection {
+  private get _project(): ProjectReflection {
     return this._context.project;
   }
 
@@ -37,7 +29,7 @@ export class ModuleConverter {
   }
 
   public addDeclaration(declaration: ModuleDeclaration): void {
-    this._moduleDeclarations.push(declaration);
+    this._moduleDeclarations[declaration.reflection.id] = declaration;
   }
 
   public collectProjectReflections(): void {
@@ -49,7 +41,8 @@ export class ModuleConverter {
   }
 
   public convertDeclarations(): void {
-    this._moduleDeclarations.forEach(moduleDeclaration => {
+    Object.keys(this._moduleDeclarations).forEach(reflectionId => {
+      let moduleDeclaration = this._moduleDeclarations[reflectionId];
       let project = this._project;
       let moduleName = moduleDeclaration.moduleName;
       let currentDeclaration = moduleDeclaration.reflection;
@@ -61,7 +54,7 @@ export class ModuleConverter {
         // Otherwise, check to see if a collected @moduledefinition with this
         // name already exists. If so, rename it and make it a top-level
         // module
-        let modDefinitionMatch = this.moduleDefinitions.find(def => def.name === moduleName);
+        let modDefinitionMatch = this._moduleDefinitions.find(def => def.name === moduleName);
         if (modDefinitionMatch) {
           moduleReflection = this._createModuleFromDefinition(modDefinitionMatch);
         } else {
@@ -79,17 +72,20 @@ export class ModuleConverter {
         }
       }
 
-      this._removeDeclarationsFromOldContainers(currentDeclaration);
+      this._removeDeclarationsFromOldContainers(currentDeclaration, moduleReflection);
 
-      this._moveDeclarationTo(currentDeclaration, moduleReflection);
+      this._reparentDeclaration(currentDeclaration, moduleReflection);
     });
   }
 
-  public removeEmptyContainer(): void {
+  public removeEmptyContainers(): void {
     // Loop through these backwards since we may be changing the indices
     // during removal
     for (let i = this._project.children.length - 1; i >= 0; i--) {
       let container = this._project.children[i];
+      if (container.children.length > 0) {
+        this._moveUnmoduledDeclarations(container);
+      }
       if (container.children.length === 0) {
         this._removeReflectionFromProject(container);
       }
@@ -119,15 +115,41 @@ export class ModuleConverter {
     return matchedReflection;
   }
 
-  private _removeDeclarationsFromOldContainers(declaration: DeclarationReflection): void {
+  private _removeDeclarationsFromOldContainers(
+    declaration: DeclarationReflection,
+    newContainer: ContainerReflection
+  ): void {
     let topLevelContainers = this._project.children;
 
     topLevelContainers.forEach((container: ContainerReflection) => {
-      let indexInContainer = this._findChildIndex(container.children, declaration);
-      if (indexInContainer >= 0) {
-        container.children.splice(indexInContainer, 1);
+      if (container !== newContainer) {
+        this._removeDeclarationFromContainer(declaration, container);
       }
     });
+  }
+
+  private _removeDeclarationFromContainer(declaration: DeclarationReflection, container: ContainerReflection): void {
+    let indexInContainer = this._findChildIndex(container.children, declaration);
+    if (indexInContainer >= 0) {
+      container.children.splice(indexInContainer, 1);
+    }
+
+    // Also remove the declaration from any groups.
+    if (container.groups) {
+      let groupIndex = container.groups.findIndex(g => g.kind === declaration.kind);
+      if (groupIndex >= 0) {
+        let group = container.groups[groupIndex];
+        let childIndex = this._findChildIndex(group.children as DeclarationReflection[], declaration);
+        if (childIndex >= 0) {
+          group.children.splice(childIndex, 1);
+
+          // And delete the group if it is now empty
+          if (group.children.length === 0) {
+            container.groups.splice(groupIndex);
+          }
+        }
+      }
+    }
   }
 
   private _findChildIndex(declarations: DeclarationReflection[], toFind: Reflection): number {
@@ -138,9 +160,11 @@ export class ModuleConverter {
     });
   }
 
-  private _moveDeclarationTo(declaration: DeclarationReflection, newContainer: ContainerReflection): void {
-    declaration.parent = newContainer;
-    newContainer.children.push(declaration);
+  private _reparentDeclaration(declaration: DeclarationReflection, newContainer: ContainerReflection): void {
+    if (declaration.parent !== newContainer) {
+      declaration.parent = newContainer;
+      newContainer.children.push(declaration);
+    }
 
     // Make sure that this declaration is in one of the container's groups
 
@@ -180,6 +204,18 @@ export class ModuleConverter {
     let childIndex = this._findChildIndex(projectGroup.children as DeclarationReflection[], container);
     if (childIndex >= 0) {
       projectGroup.children.splice(childIndex, 1);
+    }
+  }
+
+  private _moveUnmoduledDeclarations(container: ContainerReflection): void {
+    for (let i = container.children.length - 1; i >= 0; i--) {
+      let declaration = container.children[i];
+      if (!this._moduleDeclarations.hasOwnProperty(declaration.id)) {
+        this._removeDeclarationFromContainer(declaration, declaration.parent as ContainerReflection);
+        if (!declaration.hasOwnProperty("renames")) {
+          this._reparentDeclaration(declaration, this._project);
+        }
+      }
     }
   }
 }

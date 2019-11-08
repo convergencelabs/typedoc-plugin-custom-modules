@@ -45,8 +45,8 @@ export class CustomModulesPlugin extends ConverterComponent {
   private onDeclaration(context: Context, reflection: Reflection, node?: ts.Node) {
     if (reflection.kindOf(ReflectionKind.ExternalModule) && node) {
       // Look through the entire source file, and parse a "comment" from it.
-      // This isn't really how
       let comment = CustomModulesPlugin.parseModuleDefinitionComment(node);
+      // let comment = parseComment(node.getSourceFile().text);
       if (comment != null && comment.hasTag("moduledefinition")) {
         let tag = comment.getTag("moduledefinition");
         // The module name doesn't actually get parsed properly by `parseComment`,
@@ -106,7 +106,7 @@ export class CustomModulesPlugin extends ConverterComponent {
 
     this._converter.convertDeclarations();
 
-    this._converter.removeEmptyContainer();
+    this._converter.removeEmptyContainers();
   }
 
   static parseModuleDefinitionComment(node: ts.Node): Comment {
