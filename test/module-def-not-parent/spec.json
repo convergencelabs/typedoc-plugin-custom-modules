@@ -12,7 +12,7 @@
       "flags": {
         "isExported": true
       },
-      "originalName": "%BASE_URL%/example2/mod1/index.ts",
+      "originalName": "%BASE_URL%/%DIR%/mod1/index.ts",
       "comment": {
         "shortText": "This is a module!"
       },

@@ -1,0 +1,153 @@
+{
+  "id": 0,
+  "name": "Some API Documentation",
+  "kind": 0,
+  "flags": {},
+  "children": [
+    {
+      "id": 1,
+      "name": "Foo",
+      "kind": 1,
+      "kindString": "External module",
+      "flags": {
+        "isExported": true
+      },
+      "originalName": "%BASE_URL%/%DIR%/module.ts",
+      "comment": {
+        "shortText": "Foo. Not bar."
+      },
+      "children": [
+        {
+          "id": 2,
+          "name": "EntryPoint",
+          "kind": 128,
+          "kindString": "Class",
+          "flags": {
+            "isExported": true,
+            "hasExport": true
+          },
+          "children": [
+            {
+              "id": 3,
+              "name": "constructor",
+              "kind": 512,
+              "kindString": "Constructor",
+              "flags": {
+                "isExported": true
+              },
+              "signatures": [
+                {
+                  "id": 4,
+                  "name": "new EntryPoint",
+                  "kind": 16384,
+                  "kindString": "Constructor signature",
+                  "flags": {
+                    "isExported": true
+                  },
+                  "parameters": [
+                    {
+                      "id": 5,
+                      "name": "params",
+                      "kind": 32768,
+                      "kindString": "Parameter",
+                      "flags": {
+                        "isExported": true
+                      },
+                      "type": {
+                        "type": "reference",
+                        "name": "SomeParams"
+                      }
+                    }
+                  ],
+                  "type": {
+                    "type": "reference",
+                    "name": "EntryPoint",
+                    "id": 2
+                  }
+                }
+              ],
+              "sources": [
+                {
+                  "fileName": "module.ts",
+                  "line": 13,
+                  "character": 23
+                }
+              ]
+            },
+            {
+              "id": 6,
+              "name": "num",
+              "kind": 262144,
+              "kindString": "Accessor",
+              "flags": {
+                "isExported": true
+              },
+              "getSignature": [
+                {
+                  "id": 7,
+                  "name": "__get",
+                  "kind": 524288,
+                  "kindString": "Get signature",
+                  "flags": {
+                    "isExported": true
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                }
+              ],
+              "sources": [
+                {
+                  "fileName": "module.ts",
+                  "line": 19,
+                  "character": 9
+                }
+              ]
+            }
+          ],
+          "groups": [
+            {
+              "title": "Constructors",
+              "kind": 512,
+              "children": [3]
+            },
+            {
+              "title": "Accessors",
+              "kind": 262144,
+              "children": [6]
+            }
+          ],
+          "sources": [
+            {
+              "fileName": "module.ts",
+              "line": 12,
+              "character": 23
+            }
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "title": "Classes",
+          "kind": 128,
+          "children": [2]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "module.ts",
+          "line": 1,
+          "character": 0
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "External modules",
+      "kind": 1,
+      "children": [1]
+    }
+  ]
+}

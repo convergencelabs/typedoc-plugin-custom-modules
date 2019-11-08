@@ -10,9 +10,11 @@ import { ProjectReflection } from "typedoc/dist/lib/models";
 
 const base = __dirname;
 
-function normalizeSerialized(data: any) {
+function normalizeSerialized(data: any, currentDir: string) {
   return JSON.parse(
     JSON.stringify(data)
+      .split(currentDir)
+      .join("%DIR%")
       .split(normalizePath(base))
       .join("%BASE_URL%")
   );
@@ -52,7 +54,8 @@ describe("Converter", () => {
 
       it(`${directory} matches specs`, () => {
         const specs = JSON.parse(fs.readFileSync(Path.join(path, `spec.json`), "utf-8"));
-        Assert.deepStrictEqual(normalizeSerialized(result!.toObject()), specs);
+        let normalizedResult = normalizeSerialized(result!.toObject(), directory);
+        Assert.deepStrictEqual(normalizedResult, specs);
       });
     });
   });

@@ -4,7 +4,7 @@
  * @moduledefinition Foo
  */
 
-import { SomeParams } from "../example1";
+import { SomeParams } from "../multiple-ancestor-modules";
 
 /**
  * @module Foo

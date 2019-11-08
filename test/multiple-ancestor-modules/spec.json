@@ -12,7 +12,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "%BASE_URL%/example1/mod1/index.ts",
+			"originalName": "%BASE_URL%/%DIR%/mod1/index.ts",
 			"comment": {
 				"shortText": "This is module 1.  There really isn't anything modular about it at all,\nin fact, it's just a random collection of useless typescript constructs!"
 			},
@@ -254,7 +254,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "%BASE_URL%/example1/mod2/index.ts",
+			"originalName": "%BASE_URL%/%DIR%/mod2/index.ts",
 			"comment": {
 				"shortText": "And THIS, my friends, is module 2.  Hard to believe, but this module might\nbe even more useless than module 1.  I'll leave that judgement to you."
 			},

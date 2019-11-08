@@ -16,10 +16,11 @@ Inspired by the popular [typedoc-plugin-external-module-name](https://github.com
 TODO
 
 - [x] look at typedoc #801 branch to see if re-exporting functions is broken.
-- [ ] support instances where a `@moduledefinition` is placed in the same file that exports a `@module`
+- [x] support instances where a `@moduledefinition` is placed in the same file that exports a `@module`
 - [x] support cases where the `@moduledefinition` doesn't actually export all the `@module`s. These should still get linked
 - [ ] test `@moduledefinition` in a file with import statements above the comment
 - [ ] report to typedoc that exporting object literals is currently broken
+- [ ] report potential bug in `parseComment`
 - [ ] create automated tests à la typedoc
 
 Nice-to-haves:

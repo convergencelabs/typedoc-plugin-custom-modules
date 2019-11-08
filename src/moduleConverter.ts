@@ -1,6 +1,6 @@
 import { ContainerReflection } from "typedoc/dist/lib/models/reflections/container";
 import { DeclarationReflection } from "typedoc/dist/lib/models/reflections/declaration";
-import { Comment } from "typedoc/dist/lib/models";
+import { Comment, ProjectReflection } from "typedoc/dist/lib/models";
 import { Context } from "typedoc/dist/lib/converter/context";
 import { Reflection, ReflectionKind, ReflectionFlag } from "typedoc/dist/lib/models/reflections/abstract";
 import { CommentPlugin } from "typedoc/dist/lib/converter/plugins/CommentPlugin";
@@ -12,10 +12,12 @@ export class ModuleConverter {
   private _moduleDeclarations: ModuleDeclaration[];
 
   private _projectReflections: Reflection[];
+  private _context: Context;
 
-  constructor() {
+  constructor(context: Context) {
     this._moduleDefinitions = [];
     this._moduleDeclarations = [];
+    this._context = context;
   }
 
   public get moduleDeclarations(): ModuleDeclaration[] {
@@ -26,6 +28,10 @@ export class ModuleConverter {
     return this._moduleDefinitions;
   }
 
+  public get _project(): ProjectReflection {
+    return this._context.project;
+  }
+
   public addDefinition(def: ModuleDefinition): void {
     this._moduleDefinitions.push(def);
   }
@@ -34,17 +40,17 @@ export class ModuleConverter {
     this._moduleDeclarations.push(declaration);
   }
 
-  public collectProjectReflections(context: Context): void {
-    let projRefs = context.project.reflections;
+  public collectProjectReflections(): void {
+    let projRefs = this._project.reflections;
     this._projectReflections = Object.keys(projRefs).reduce((m, k) => {
       m.push(projRefs[k]);
       return m;
     }, []);
   }
 
-  public convertDeclarations(context: Context): void {
+  public convertDeclarations(): void {
     this._moduleDeclarations.forEach(moduleDeclaration => {
-      let project = context.project;
+      let project = this._project;
       let moduleName = moduleDeclaration.moduleName;
       let currentDeclaration = moduleDeclaration.reflection;
 
@@ -57,7 +63,7 @@ export class ModuleConverter {
         // module
         let modDefinitionMatch = this.moduleDefinitions.find(def => def.name === moduleName);
         if (modDefinitionMatch) {
-          moduleReflection = this._createModuleFromDefinition(modDefinitionMatch, context);
+          moduleReflection = this._createModuleFromDefinition(modDefinitionMatch);
         } else {
           // If there's no matching @moduledefinition, we'll have to create
           // a new module container from scratch. This should match
@@ -73,13 +79,24 @@ export class ModuleConverter {
         }
       }
 
-      this._removeDeclarationsFromAllContainers(context, currentDeclaration);
+      this._removeDeclarationsFromOldContainers(currentDeclaration);
 
       this._moveDeclarationTo(currentDeclaration, moduleReflection);
     });
   }
 
-  private _createModuleFromDefinition(def: ModuleDefinition, context: Context): DeclarationReflection {
+  public removeEmptyContainer(): void {
+    // Loop through these backwards since we may be changing the indices
+    // during removal
+    for (let i = this._project.children.length - 1; i >= 0; i--) {
+      let container = this._project.children[i];
+      if (container.children.length === 0) {
+        this._removeReflectionFromProject(container);
+      }
+    }
+  }
+
+  private _createModuleFromDefinition(def: ModuleDefinition): DeclarationReflection {
     let matchedReflection = this._projectReflections.find(ref => ref === def.reflection) as DeclarationReflection;
 
     // remove the found reflection from its previous parent
@@ -90,38 +107,27 @@ export class ModuleConverter {
     }
 
     // set the parent of the found reflection to be the project and rename
-    matchedReflection.parent = context.project;
-    context.project.children.push(matchedReflection);
+    matchedReflection.parent = this._project;
+    this._project.children.push(matchedReflection);
     matchedReflection.name = def.name;
-    matchedReflection.comment = def.comment;
+
+    // Set the extracted comment to the reflection if it's not empty
+    if (def.comment.shortText != null && def.comment.shortText.trim().length > 0) {
+      matchedReflection.comment = def.comment;
+    }
 
     return matchedReflection;
   }
 
-  private _removeDeclarationsFromAllContainers(context: Context, declaration: DeclarationReflection): void {
-    let topLevelContainers = context.project.children;
+  private _removeDeclarationsFromOldContainers(declaration: DeclarationReflection): void {
+    let topLevelContainers = this._project.children;
 
-    // Loop through these backwards since we may be changing the indices
-    // during removal
-    for (let i = topLevelContainers.length - 1; i >= 0; i--) {
-      let container: ContainerReflection = topLevelContainers[i];
+    topLevelContainers.forEach((container: ContainerReflection) => {
       let indexInContainer = this._findChildIndex(container.children, declaration);
       if (indexInContainer >= 0) {
         container.children.splice(indexInContainer, 1);
-
-        if (container.children.length === 0) {
-          // if the container is now empty, remove it
-          CommentPlugin.removeReflection(context.project, container);
-
-          // Also, remove it from the project's group
-          let projectGroup = context.project.groups[0];
-          let childIndex = this._findChildIndex(projectGroup.children as DeclarationReflection[], container);
-          if (childIndex >= 0) {
-            projectGroup.children.splice(childIndex, 1);
-          }
-        }
       }
-    }
+    });
   }
 
   private _findChildIndex(declarations: DeclarationReflection[], toFind: Reflection): number {
@@ -162,6 +168,18 @@ export class ModuleConverter {
       // Create a new group with this declaration in it.
       containerGroup = GroupPlugin.getReflectionGroups([declaration])[0];
       newContainer.groups.push(containerGroup);
+    }
+  }
+
+  private _removeReflectionFromProject(container: ContainerReflection): void {
+    // if the container is now empty, remove it from the project
+    CommentPlugin.removeReflection(this._project, container);
+
+    // Also, remove it from the project's group
+    let projectGroup = this._project.groups[0];
+    let childIndex = this._findChildIndex(projectGroup.children as DeclarationReflection[], container);
+    if (childIndex >= 0) {
+      projectGroup.children.splice(childIndex, 1);
     }
   }
 }
