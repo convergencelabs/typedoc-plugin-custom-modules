@@ -21,7 +21,7 @@ Inspired by the popular [typedoc-plugin-external-module-name](https://github.com
 
 TODO
 
-- [ ] report to typedoc that exporting object literals is currently broken?
+- [ ] re-test with exported object literals
 
 Potential future enhancements:
 

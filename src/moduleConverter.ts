@@ -92,6 +92,10 @@ export class ModuleConverter {
     }
   }
 
+  public sortAll(): void {
+    this._sortDeclarations(this._project);
+  }
+
   private _createModuleFromDefinition(def: ModuleDefinition): DeclarationReflection {
     let matchedReflection = this._projectReflections.find(ref => ref === def.reflection) as DeclarationReflection;
 
@@ -216,6 +220,22 @@ export class ModuleConverter {
           this._reparentDeclaration(declaration, this._project);
         }
       }
+    }
+  }
+
+  private _sortDeclarations(container: ContainerReflection): void {
+    if (container.children) {
+      container.children.forEach(declaration => {
+        if (declaration instanceof ContainerReflection) {
+          this._sortDeclarations(declaration);
+        }
+      });
+      container.children.sort(GroupPlugin.sortCallback);
+    }
+    if (container.groups) {
+      container.groups.forEach(group => {
+        group.children.sort(GroupPlugin.sortCallback);
+      });
     }
   }
 }

@@ -18,6 +18,23 @@
       },
       "children": [
         {
+          "id": 6,
+          "name": "ModuleClass",
+          "kind": 128,
+          "kindString": "Class",
+          "flags": {
+            "isExported": true,
+            "hasExport": true
+          },
+          "sources": [
+            {
+              "fileName": "mod1/module.ts",
+              "line": 4,
+              "character": 24
+            }
+          ]
+        },
+        {
           "id": 2,
           "name": "stringUtil",
           "kind": 64,
@@ -61,23 +78,6 @@
               "fileName": "common/common.ts",
               "line": 4,
               "character": 26
-            }
-          ]
-        },
-        {
-          "id": 6,
-          "name": "ModuleClass",
-          "kind": 128,
-          "kindString": "Class",
-          "flags": {
-            "isExported": true,
-            "hasExport": true
-          },
-          "sources": [
-            {
-              "fileName": "mod1/module.ts",
-              "line": 4,
-              "character": 24
             }
           ]
         }

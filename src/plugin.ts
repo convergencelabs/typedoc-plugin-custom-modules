@@ -107,6 +107,8 @@ export class CustomModulesPlugin extends ConverterComponent {
     this._converter.convertDeclarations();
 
     this._converter.removeEmptyContainers();
+
+    this._converter.sortAll();
   }
 
   static parseModuleDefinitionComment(node: ts.Node): Comment {
