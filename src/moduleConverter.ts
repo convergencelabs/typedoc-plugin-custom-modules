@@ -7,10 +7,20 @@ import { CommentPlugin } from "typedoc/dist/lib/converter/plugins/CommentPlugin"
 import { GroupPlugin } from "typedoc/dist/lib/converter/plugins";
 
 export class ModuleConverter {
-  /** List of module reflections which are models to rename */
+  /**
+   * The module definitions that have been collected
+   */
   private _moduleDefinitions: ModuleDefinition[];
+
+  /**
+   * The module declarations (reflections with a `@module` tag) that have
+   * been collected, keyed by reflectionId
+   */
   private _moduleDeclarations: { [reflectionId: string]: ModuleDeclaration };
 
+  /**
+   * The project's direct reflection children.
+   */
   private _projectReflections: Reflection[];
   private _context: Context;
 
@@ -32,15 +42,16 @@ export class ModuleConverter {
     this._moduleDeclarations[declaration.reflection.id] = declaration;
   }
 
-  public collectProjectReflections(): void {
+  public convertDeclarations(): void {
     let projRefs = this._project.reflections;
     this._projectReflections = Object.keys(projRefs).reduce((m, k) => {
       m.push(projRefs[k]);
       return m;
     }, []);
-  }
 
-  public convertDeclarations(): void {
+    /**
+     * Iterate through all the declarations that were tagged `@module`
+     */
     Object.keys(this._moduleDeclarations).forEach(reflectionId => {
       let moduleDeclaration = this._moduleDeclarations[reflectionId];
       let project = this._project;
@@ -61,7 +72,7 @@ export class ModuleConverter {
           // If there's no matching @moduledefinition, we'll have to create
           // a new module container from scratch. This should match
           // a container reflection in the original.json file.
-          // The below definition isn't correct: there are some missing attributes
+          // NOTE: The below definition isn't correct: there are some missing attributes
           // and especially the groups section doesn't get created.
           moduleReflection = new DeclarationReflection(moduleName, ReflectionKind.ExternalModule, project);
           moduleReflection.parent = project;
@@ -211,6 +222,12 @@ export class ModuleConverter {
     }
   }
 
+  /**
+   * Iterate through all children of the given container and move any declaration
+   * that isn't explicitly tagged `@module` to the project reflection.
+   *
+   * @param container
+   */
   private _moveUnmoduledDeclarations(container: ContainerReflection): void {
     for (let i = container.children.length - 1; i >= 0; i--) {
       let declaration = container.children[i];
@@ -223,6 +240,12 @@ export class ModuleConverter {
     }
   }
 
+  /**
+   * Recursively sort all the groups and children of the given ContainerReflection
+   * according to the heuristics in `GroupPlugin.sortCallback`.
+   *
+   * @param container
+   */
   private _sortDeclarations(container: ContainerReflection): void {
     if (container.children) {
       container.children.forEach(declaration => {

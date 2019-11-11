@@ -11,11 +11,15 @@ import * as ts from "typescript";
 import { Comment } from "typedoc/dist/lib/models";
 
 /**
- *
+ * Adds support for module definitions using `@moduledefinition` and module
+ * tags using `@module`.
  */
 @Component({ name: "custom-modules" })
 export class CustomModulesPlugin extends ConverterComponent {
   private _converter: ModuleConverter;
+
+  public static readonly MODULE_TAG = "module";
+  public static readonly MODULE_DEFINITION_TAG = "moduledefinition";
 
   initialize() {
     this.listenTo(this.owner, {
@@ -47,15 +51,15 @@ export class CustomModulesPlugin extends ConverterComponent {
       // Look through the entire source file, and parse a "comment" from it.
       let comment = CustomModulesPlugin.parseModuleDefinitionComment(node);
       // let comment = parseComment(node.getSourceFile().text);
-      if (comment != null && comment.hasTag("moduledefinition")) {
-        let tag = comment.getTag("moduledefinition");
+      if (comment != null && comment.hasTag(CustomModulesPlugin.MODULE_DEFINITION_TAG)) {
+        let tag = comment.getTag(CustomModulesPlugin.MODULE_DEFINITION_TAG);
         // The module name doesn't actually get parsed properly by `parseComment`,
         // you end up with the actual code after the comment block ends as well.
         // To work around this, look for a newline character and grab everything
         // before it.
         let match = /(.+)?[\n\r]?/.exec(tag.text);
 
-        CommentPlugin.removeTags(comment, "moduledefinition");
+        CommentPlugin.removeTags(comment, CustomModulesPlugin.MODULE_DEFINITION_TAG);
 
         if (match != null && match.length >= 1) {
           this._converter.addDefinition({
@@ -93,24 +97,39 @@ export class CustomModulesPlugin extends ConverterComponent {
   /**
    * Triggered when the converter begins resolving a project.
    *
-   * Here, we need to iterate through all the module-tagged declarations
-   * and create the actual module container Declarations to house the tagged
-   * declarations. Then, we'll need to move the declarations to these new
-   * containers.  We'll also want to remove any containers which no longer
-   * have any exports due to this change.
-   *
    * @param context  The context object describing the current state the converter is in.
    */
   private onResolveEnd(context: Context) {
-    this._converter.collectProjectReflections();
-
+    // First, iterate through all the module-tagged declarations
+    // and create the actual module container Declarations to house the tagged
+    // declarations. Then, move the declarations to these new containers.
     this._converter.convertDeclarations();
 
+    // Remove any containers which no longer have any exports due to this change.
     this._converter.removeEmptyContainers();
 
+    // Re-sort the declarations in the entire project, since we likely moved
+    // a lot of declarations around.
     this._converter.sortAll();
   }
 
+  /**
+   * Extracted from typedoc: `getRawComment` in `src/lib/converter/factories/comment.ts`
+   *
+   * This code block was problematic.  We need to be able to support files where
+   * there is only one comment:
+   *
+   * ```
+   * if (node.kind === ts.SyntaxKind.SourceFile) {
+   *   if (comments.length === 1) {
+   *     return;
+   *   }
+   *   comment = comments[0];
+   * }
+   *  ```
+   *
+   * @param node the typescript node in which to look for a definition comment
+   */
   static parseModuleDefinitionComment(node: ts.Node): Comment {
     let sourceFile = node.getSourceFile();
     let text = sourceFile.text;
@@ -133,6 +152,11 @@ export class CustomModulesPlugin extends ConverterComponent {
     return null;
   }
 
+  /**
+   * Given a declaration, extract a @module tag in its comment, if one exists.
+   *
+   * @param reflection
+   */
   static getTaggedModule(reflection: DeclarationReflection): string {
     let moduleName;
     if (reflection.flags.hasExport) {
@@ -158,11 +182,17 @@ export class CustomModulesPlugin extends ConverterComponent {
     return moduleName;
   }
 
+  /**
+   * Returns the value of a @module tag in the given reflection. If one exists,
+   * remove the tag.  If the encapsulating comment is then empty, delete it.
+   *
+   * @param reflection
+   */
   static stripModuleTag(reflection: Reflection): string | undefined {
     let comment = reflection.comment;
     let moduleName;
-    if (comment.hasTag("module")) {
-      let moduleText = comment.getTag("module").text;
+    if (comment.hasTag(CustomModulesPlugin.MODULE_TAG)) {
+      let moduleText = comment.getTag(CustomModulesPlugin.MODULE_TAG).text;
       if (moduleText != null && moduleText.trim().length > 0) {
         moduleName = moduleText.trim();
       }
@@ -171,7 +201,7 @@ export class CustomModulesPlugin extends ConverterComponent {
     // remove the @module tag. If this makes the comment empty, delete it
     // as well.
     if (moduleName) {
-      CommentPlugin.removeTags(comment, "module");
+      CommentPlugin.removeTags(comment, CustomModulesPlugin.MODULE_TAG);
       if (comment.shortText == null || comment.shortText.length === 0) {
         delete reflection.comment;
       }

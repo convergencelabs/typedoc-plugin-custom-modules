@@ -9,7 +9,7 @@ This plugin supports two additional comment tags:
 
 Additionally, **all** exported TS constructs not explicitly tagged with `@module` are automatically unwrapped from the default "module" (which is just the file in which it is defined) and placed directly beneath the project. This should be identical to using Typedoc with `mode="file"`.
 
-See the [`test/example1`](/test/example1) directory for a typical use case for this plugin.
+See the [`test/multiple-ancestor-modules`](/test/multiple-ancestor-modules) directory for a typical use case for this plugin.
 
 Requires typedoc 0.16.0 (yet unreleased)! This is currently built on top of [Typedoc PR #801](https://github.com/TypeStrong/typedoc/pull/801), which enables the support of export declarations.
 
@@ -22,8 +22,10 @@ Inspired by the popular [typedoc-plugin-external-module-name](https://github.com
 TODO
 
 - [ ] re-test with exported object literals
+- [ ] after typedoc #801 is merged, add CI tests
 
 Potential future enhancements:
 
-- Support per-file comments as well. Individual export `@module`s override any file `@module`s though
+- Support per-file `@module` tags as well. Individual export `@module`s would override any file `@module`s
 - Nested modules with a `@parent` tag or something
+- Support automatic creation of modules (such that a `@moduledefinition` isn't required for every potential `@module`)
