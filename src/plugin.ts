@@ -159,7 +159,7 @@ export class CustomModulesPlugin extends ConverterComponent {
    */
   static getTaggedModule(reflection: DeclarationReflection): string {
     let moduleName;
-    if (reflection.flags.hasExport) {
+    if (reflection.flags.isExported) {
       switch (reflection.kind) {
         case ReflectionKind.Function: {
           for (let signature of reflection.getAllSignatures()) {

@@ -1,5 +1,6 @@
 import { ContainerReflection } from "typedoc/dist/lib/models/reflections/container";
 import { DeclarationReflection } from "typedoc/dist/lib/models/reflections/declaration";
+import { ReferenceReflection } from "typedoc/dist/lib/models/reflections/reference";
 import { Comment, ProjectReflection } from "typedoc/dist/lib/models";
 import { Context } from "typedoc/dist/lib/converter/context";
 import { Reflection, ReflectionKind, ReflectionFlag } from "typedoc/dist/lib/models/reflections/abstract";
@@ -171,7 +172,7 @@ export class ModuleConverter {
     return declarations.findIndex(child => {
       // explicitly exported declarations get a "renames" property, which
       // is just a duplicate of the original declaration.
-      return child.id === toFind.id || child.renames === toFind.id;
+      return child.id === toFind.id || (child instanceof ReferenceReflection && child.getTargetReflection() === toFind);
     });
   }
 
@@ -192,7 +193,8 @@ export class ModuleConverter {
       // Find any grouped declarations that were just pointers to this one,
       // and replace the pointer with the original
       let pointerIndex = containerGroup.children.findIndex(
-        (child: DeclarationReflection) => child.renames === declaration.id
+        (child: DeclarationReflection) =>
+          child instanceof ReferenceReflection && child.getTargetReflection() === declaration
       );
       if (pointerIndex >= 0) {
         containerGroup.children.splice(pointerIndex, 1, declaration);

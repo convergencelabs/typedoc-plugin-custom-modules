@@ -23,8 +23,7 @@
           "kind": 128,
           "kindString": "Class",
           "flags": {
-            "isExported": true,
-            "hasExport": true
+            "isExported": true
           },
           "children": [
             {

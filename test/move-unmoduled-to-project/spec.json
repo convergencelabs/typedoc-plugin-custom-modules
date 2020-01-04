@@ -5,7 +5,7 @@
   "flags": {},
   "children": [
     {
-      "id": 7,
+      "id": 9,
       "name": "Module",
       "kind": 1,
       "kindString": "External module",
@@ -49,6 +49,52 @@
     },
     {
       "id": 3,
+      "name": "AlsoTotallyUnmoduled",
+      "kind": 256,
+      "kindString": "Interface",
+      "flags": {
+        "isExported": true,
+        "hasExport": true
+      },
+      "children": [
+        {
+          "id": 4,
+          "name": "really",
+          "kind": 1024,
+          "kindString": "Property",
+          "flags": {
+            "isExported": true
+          },
+          "sources": [
+            {
+              "fileName": "mod1/inner/stuff.ts",
+              "line": 11,
+              "character": 8
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "boolean"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "kind": 1024,
+          "children": [4]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "mod1/inner/stuff.ts",
+          "line": 10,
+          "character": 37
+        }
+      ]
+    },
+    {
+      "id": 5,
       "name": "notInAModule",
       "kind": 64,
       "kindString": "Function",
@@ -58,7 +104,7 @@
       },
       "signatures": [
         {
-          "id": 4,
+          "id": 6,
           "name": "notInAModule",
           "kind": 4096,
           "kindString": "Call signature",
@@ -84,11 +130,16 @@
     {
       "title": "External modules",
       "kind": 1,
-      "children": [7]
+      "children": [9]
     },
     {
       "title": "Functions",
       "kind": 64,
+      "children": [5]
+    },
+    {
+      "title": "Interfaces",
+      "kind": 256,
       "children": [3]
     }
   ]
