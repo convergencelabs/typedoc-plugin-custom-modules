@@ -11,7 +11,7 @@ Additionally, **all** exported TS constructs not explicitly tagged with `@module
 
 See the [`test/multiple-ancestor-modules`](/test/multiple-ancestor-modules) directory for a typical use case for this plugin.
 
-Requires typedoc 0.16.0 (yet unreleased)! This is currently built on top of [Typedoc PR #801](https://github.com/TypeStrong/typedoc/pull/801), which enables the support of export declarations.
+Requires typedoc 0.16.0 (yet unreleased)! This is currently built on top of [Typedoc PR #1157](https://github.com/TypeStrong/typedoc/pull/1157), which enables the support of export declarations.
 
 Inspired by the popular [typedoc-plugin-external-module-name](https://github.com/christopherthielen/typedoc-plugin-external-module-name), but with a slightly different set of requirements. This plugin leverages some improved TypeDoc comment APIs to support spaces within module names.
 
@@ -21,8 +21,7 @@ Inspired by the popular [typedoc-plugin-external-module-name](https://github.com
 
 TODO
 
-- [ ] re-test with exported object literals
-- [ ] after typedoc #801 is merged, add CI tests
+- [ ] after typedoc #1157 is merged, add CI tests
 
 Potential future enhancements:
 

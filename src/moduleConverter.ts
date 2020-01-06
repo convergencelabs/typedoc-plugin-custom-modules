@@ -73,6 +73,11 @@ export class ModuleConverter {
           // If there's no matching @moduledefinition, we'll have to create
           // a new module container from scratch. This should match
           // a container reflection in the original.json file.
+          console.log(
+            "No @moduledefinition was found for",
+            moduleName,
+            " and automatic module creation isn't supported.  Make sure every @module annotation refers to an existing @moduledefinition."
+          );
           // NOTE: The below definition isn't correct: there are some missing attributes
           // and especially the groups section doesn't get created.
           moduleReflection = new DeclarationReflection(moduleName, ReflectionKind.ExternalModule, project);

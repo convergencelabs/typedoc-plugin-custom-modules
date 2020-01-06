@@ -12,11 +12,11 @@ export function decorate(obj: SomeParams): SomeParams {
   };
 }
 
-// /**
-//  * @module1 Module 1
-//  */
-// let typeLiteral = {
-//   valueA: "stuff"
-// };
+/**
+ * @module Module 1
+ */
+let typeLiteral = {
+  valueA: "stuff"
+};
 
-// export { typeLiteral };
+export { typeLiteral };
