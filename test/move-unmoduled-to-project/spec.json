@@ -5,7 +5,7 @@
   "flags": {},
   "children": [
     {
-      "id": 9,
+      "id": 11,
       "name": "Module",
       "kind": 1,
       "kindString": "External module",
@@ -20,8 +20,7 @@
           "kind": 128,
           "kindString": "Class",
           "flags": {
-            "isExported": true,
-            "hasExport": true
+            "isExported": true
           },
           "sources": [
             {
@@ -53,8 +52,7 @@
       "kind": 256,
       "kindString": "Interface",
       "flags": {
-        "isExported": true,
-        "hasExport": true
+        "isExported": true
       },
       "children": [
         {
@@ -99,8 +97,7 @@
       "kind": 64,
       "kindString": "Function",
       "flags": {
-        "isExported": true,
-        "hasExport": true
+        "isExported": true
       },
       "signatures": [
         {
@@ -130,7 +127,7 @@
     {
       "title": "External modules",
       "kind": 1,
-      "children": [9]
+      "children": [11]
     },
     {
       "title": "Functions",

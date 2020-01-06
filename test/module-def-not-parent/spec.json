@@ -23,8 +23,7 @@
           "kind": 128,
           "kindString": "Class",
           "flags": {
-            "isExported": true,
-            "hasExport": true
+            "isExported": true
           },
           "sources": [
             {
@@ -40,8 +39,7 @@
           "kind": 64,
           "kindString": "Function",
           "flags": {
-            "isExported": true,
-            "hasExport": true
+            "isExported": true
           },
           "signatures": [
             {
@@ -84,14 +82,14 @@
       ],
       "groups": [
         {
-          "title": "Classes",
-          "kind": 128,
-          "children": [6]
-        },
-        {
           "title": "Functions",
           "kind": 64,
           "children": [2]
+        },
+        {
+          "title": "Classes",
+          "kind": 128,
+          "children": [6]
         }
       ],
       "sources": [

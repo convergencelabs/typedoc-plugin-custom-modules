@@ -95,10 +95,10 @@ export class ModuleConverter {
     // during removal
     for (let i = this._project.children.length - 1; i >= 0; i--) {
       let container = this._project.children[i];
-      if (container.children.length > 0) {
+      if (container.children && container.children.length > 0) {
         this._moveUnmoduledDeclarations(container);
       }
-      if (container.children.length === 0) {
+      if (!container.children || container.children.length === 0) {
         this._removeReflectionFromProject(container);
       }
     }
@@ -145,9 +145,11 @@ export class ModuleConverter {
   }
 
   private _removeDeclarationFromContainer(declaration: DeclarationReflection, container: ContainerReflection): void {
-    let indexInContainer = this._findChildIndex(container.children, declaration);
-    if (indexInContainer >= 0) {
-      container.children.splice(indexInContainer, 1);
+    if (container.children) {
+      let indexInContainer = this._findChildIndex(container.children, declaration);
+      if (indexInContainer >= 0) {
+        container.children.splice(indexInContainer, 1);
+      }
     }
 
     // Also remove the declaration from any groups.
@@ -161,7 +163,7 @@ export class ModuleConverter {
 
           // And delete the group if it is now empty
           if (group.children.length === 0) {
-            container.groups.splice(groupIndex);
+            container.groups.splice(groupIndex, 1);
           }
         }
       }
@@ -179,6 +181,7 @@ export class ModuleConverter {
   private _reparentDeclaration(declaration: DeclarationReflection, newContainer: ContainerReflection): void {
     if (declaration.parent !== newContainer) {
       declaration.parent = newContainer;
+      this._ensureChildren(newContainer);
       newContainer.children.push(declaration);
     }
 
@@ -235,7 +238,7 @@ export class ModuleConverter {
       let declaration = container.children[i];
       if (!this._moduleDeclarations.hasOwnProperty(declaration.id)) {
         this._removeDeclarationFromContainer(declaration, declaration.parent as ContainerReflection);
-        if (!declaration.hasOwnProperty("renames")) {
+        if (!(declaration instanceof ReferenceReflection)) {
           this._reparentDeclaration(declaration, this._project);
         }
       }
@@ -263,14 +266,27 @@ export class ModuleConverter {
       });
     }
   }
+
+  private _ensureChildren(container: ContainerReflection): void {
+    if (!container.children) {
+      container.children = [];
+    }
+  }
 }
 
+/**
+ * Holds metadata about a found @moduledefinition
+ */
 export interface ModuleDefinition {
   name: string;
   comment: Comment;
+  // The ContainerReflection on which the @moduledefinition was declared
   reflection: ContainerReflection;
 }
 
+/**
+ * Holds metadata about a found @module
+ */
 export interface ModuleDeclaration {
   moduleName: string;
   reflection: DeclarationReflection;

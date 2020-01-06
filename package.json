@@ -27,7 +27,7 @@
   "author": "Alec LaLonde",
   "license": "MIT",
   "peerDependencies": {
-    "typedoc": "^0.16.0-2"
+    "typedoc": "^0.16.0-3"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
