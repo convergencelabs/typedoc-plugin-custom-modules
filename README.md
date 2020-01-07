@@ -17,15 +17,11 @@ Requires typedoc 0.16.0 (yet unreleased)! This is currently built on top of [Typ
 
 Inspired by the popular [typedoc-plugin-external-module-name](https://github.com/christopherthielen/typedoc-plugin-external-module-name), but with a slightly different set of requirements. This plugin leverages some improved TypeDoc comment APIs to support spaces within module names.
 
-## Caveats
+## Companion theme
 
-- The comment containing a `@moduledefinition` must be the FIRST thing in a file. E.g. no `import` statements above it, no header license comments, etc.
+See the [companion theme](https://github.com/convergencelabs/typedoc-theme) for an optional, slightly customized version of the default theme with this plugin in mind.
 
-TODO
-
-- [ ] after typedoc #1157 is merged, add CI tests
-
-Potential future enhancements:
+### Potential future enhancements:
 
 - Support per-file `@module` tags as well. Individual export `@module`s would override any file `@module`s
 - Nested modules with a `@parent` tag or something

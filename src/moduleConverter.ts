@@ -1,9 +1,14 @@
-import { ContainerReflection } from "typedoc/dist/lib/models/reflections/container";
-import { DeclarationReflection } from "typedoc/dist/lib/models/reflections/declaration";
-import { ReferenceReflection } from "typedoc/dist/lib/models/reflections/reference";
-import { Comment, ProjectReflection } from "typedoc/dist/lib/models";
+import {
+  ContainerReflection,
+  DeclarationReflection,
+  ProjectReflection,
+  ReferenceReflection,
+  Reflection,
+  ReflectionKind,
+  ReflectionFlag
+} from "typedoc";
+import { Comment } from "typedoc/dist/lib/models";
 import { Context } from "typedoc/dist/lib/converter/context";
-import { Reflection, ReflectionKind, ReflectionFlag } from "typedoc/dist/lib/models/reflections/abstract";
 import { CommentPlugin } from "typedoc/dist/lib/converter/plugins/CommentPlugin";
 import { GroupPlugin } from "typedoc/dist/lib/converter/plugins";
 
