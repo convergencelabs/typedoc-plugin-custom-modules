@@ -1,12 +1,9 @@
-import { Application } from "typedoc/dist/lib/Application";
-import { normalizePath } from "typedoc/dist/lib/utils";
+import { Application, normalizePath, resetReflectionID, ProjectReflection } from "typedoc";
 import * as fs from "fs";
 import * as Path from "path";
 import Assert = require("assert");
 
 import * as testConfig from "./typedoc";
-import { resetReflectionID } from "typedoc/dist/lib/models/reflections/abstract";
-import { ProjectReflection } from "typedoc/dist/lib/models";
 
 const base = __dirname;
 
