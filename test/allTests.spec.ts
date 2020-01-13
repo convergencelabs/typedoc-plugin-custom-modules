@@ -21,15 +21,12 @@ function normalizeSerialized(data: any, currentDir: string) {
  * Adapted from the typedoc test suite.
  */
 describe("Converter", () => {
-  let app: Application;
-
   Object.assign(testConfig, {
     tsconfig: Path.join(base, "tsconfig.json")
   });
 
-  before("constructs", () => {
-    app = new Application(testConfig);
-  });
+  let app = new Application();
+  app.bootstrap(testConfig);
 
   fs.readdirSync(base).forEach(directory => {
     const path = Path.join(base, directory);
@@ -51,7 +48,7 @@ describe("Converter", () => {
 
       it(`${directory} matches specs`, () => {
         const specs = JSON.parse(fs.readFileSync(Path.join(path, `spec.json`), "utf-8"));
-        let normalizedResult = normalizeSerialized(result!.toObject(), directory);
+        let normalizedResult = normalizeSerialized(app.serializer.toObject(result), directory);
         Assert.deepStrictEqual(normalizedResult, specs);
       });
     });
