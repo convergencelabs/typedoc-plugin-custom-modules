@@ -5,7 +5,7 @@
   "flags": {},
   "children": [
     {
-      "id": 15,
+      "id": 16,
       "name": "Module 1",
       "kind": 1,
       "kindString": "External module",
@@ -18,7 +18,7 @@
       },
       "children": [
         {
-          "id": 2,
+          "id": 3,
           "name": "Module1Nested",
           "kind": 128,
           "kindString": "Class",
@@ -27,7 +27,7 @@
           },
           "children": [
             {
-              "id": 3,
+              "id": 4,
               "name": "constructor",
               "kind": 512,
               "kindString": "Constructor",
@@ -36,7 +36,7 @@
               },
               "signatures": [
                 {
-                  "id": 4,
+                  "id": 5,
                   "name": "new Module1Nested",
                   "kind": 16384,
                   "kindString": "Constructor signature",
@@ -45,7 +45,7 @@
                   },
                   "parameters": [
                     {
-                      "id": 5,
+                      "id": 6,
                       "name": "params",
                       "kind": 32768,
                       "kindString": "Parameter",
@@ -54,15 +54,15 @@
                       },
                       "type": {
                         "type": "reference",
-                        "name": "SomeParams",
-                        "id": 6
+                        "id": 7,
+                        "name": "SomeParams"
                       }
                     }
                   ],
                   "type": {
                     "type": "reference",
-                    "name": "Module1Nested",
-                    "id": 2
+                    "id": 3,
+                    "name": "Module1Nested"
                   }
                 }
               ],
@@ -79,7 +79,7 @@
             {
               "title": "Constructors",
               "kind": 512,
-              "children": [3]
+              "children": [4]
             }
           ],
           "sources": [
@@ -91,7 +91,7 @@
           ]
         },
         {
-          "id": 6,
+          "id": 7,
           "name": "SomeParams",
           "kind": 256,
           "kindString": "Interface",
@@ -100,7 +100,7 @@
           },
           "children": [
             {
-              "id": 8,
+              "id": 9,
               "name": "num",
               "kind": 1024,
               "kindString": "Property",
@@ -120,7 +120,7 @@
               }
             },
             {
-              "id": 7,
+              "id": 8,
               "name": "str",
               "kind": 1024,
               "kindString": "Property",
@@ -144,7 +144,7 @@
             {
               "title": "Properties",
               "kind": 1024,
-              "children": [8, 7]
+              "children": [9, 8]
             }
           ],
           "sources": [
@@ -156,7 +156,7 @@
           ]
         },
         {
-          "id": 10,
+          "id": 11,
           "name": "decorate",
           "kind": 64,
           "kindString": "Function",
@@ -165,7 +165,7 @@
           },
           "signatures": [
             {
-              "id": 11,
+              "id": 12,
               "name": "decorate",
               "kind": 4096,
               "kindString": "Call signature",
@@ -177,7 +177,7 @@
               },
               "parameters": [
                 {
-                  "id": 12,
+                  "id": 13,
                   "name": "obj",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -186,15 +186,15 @@
                   },
                   "type": {
                     "type": "reference",
-                    "name": "SomeParams",
-                    "id": 6
+                    "id": 7,
+                    "name": "SomeParams"
                   }
                 }
               ],
               "type": {
                 "type": "reference",
-                "name": "SomeParams",
-                "id": 6
+                "id": 7,
+                "name": "SomeParams"
               }
             }
           ],
@@ -207,7 +207,7 @@
           ]
         },
         {
-          "id": 13,
+          "id": 14,
           "name": "typeLiteral",
           "kind": 2097152,
           "kindString": "Object literal",
@@ -217,7 +217,7 @@
           },
           "children": [
             {
-              "id": 14,
+              "id": 15,
               "name": "valueA",
               "kind": 32,
               "kindString": "Variable",
@@ -242,7 +242,7 @@
             {
               "title": "Variables",
               "kind": 32,
-              "children": [14]
+              "children": [15]
             }
           ],
           "sources": [
@@ -262,22 +262,22 @@
         {
           "title": "Classes",
           "kind": 128,
-          "children": [2]
+          "children": [3]
         },
         {
           "title": "Interfaces",
           "kind": 256,
-          "children": [6]
+          "children": [7]
         },
         {
           "title": "Functions",
           "kind": 64,
-          "children": [10]
+          "children": [11]
         },
         {
           "title": "Object literals",
           "kind": 2097152,
-          "children": [13]
+          "children": [14]
         }
       ],
       "sources": [
@@ -289,7 +289,7 @@
       ]
     },
     {
-      "id": 28,
+      "id": 29,
       "name": "Module 2",
       "kind": 1,
       "kindString": "External module",
@@ -302,7 +302,7 @@
       },
       "children": [
         {
-          "id": 21,
+          "id": 22,
           "name": "MyEnum",
           "kind": 4,
           "kindString": "Enumeration",
@@ -311,7 +311,7 @@
           },
           "children": [
             {
-              "id": 22,
+              "id": 23,
               "name": "ONE",
               "kind": 16,
               "kindString": "Enumeration member",
@@ -328,7 +328,7 @@
               "defaultValue": "1"
             },
             {
-              "id": 23,
+              "id": 24,
               "name": "TWO",
               "kind": 16,
               "kindString": "Enumeration member",
@@ -349,7 +349,7 @@
             {
               "title": "Enumeration members",
               "kind": 16,
-              "children": [22, 23]
+              "children": [23, 24]
             }
           ],
           "sources": [
@@ -361,7 +361,7 @@
           ]
         },
         {
-          "id": 24,
+          "id": 25,
           "name": "createSomething",
           "kind": 64,
           "kindString": "Function",
@@ -370,7 +370,7 @@
           },
           "signatures": [
             {
-              "id": 25,
+              "id": 26,
               "name": "createSomething",
               "kind": 4096,
               "kindString": "Call signature",
@@ -380,7 +380,7 @@
               "type": {
                 "type": "reflection",
                 "declaration": {
-                  "id": 26,
+                  "id": 27,
                   "name": "__type",
                   "kind": 65536,
                   "kindString": "Type literal",
@@ -389,7 +389,7 @@
                   },
                   "children": [
                     {
-                      "id": 27,
+                      "id": 28,
                       "name": "foo",
                       "kind": 32,
                       "kindString": "Variable",
@@ -414,7 +414,7 @@
                     {
                       "title": "Variables",
                       "kind": 32,
-                      "children": [27]
+                      "children": [28]
                     }
                   ]
                 }
@@ -434,12 +434,12 @@
         {
           "title": "Enumerations",
           "kind": 4,
-          "children": [21]
+          "children": [22]
         },
         {
           "title": "Functions",
           "kind": 64,
-          "children": [24]
+          "children": [25]
         }
       ],
       "sources": [
@@ -455,7 +455,7 @@
     {
       "title": "External modules",
       "kind": 1,
-      "children": [15, 28]
+      "children": [16, 29]
     }
   ]
 }

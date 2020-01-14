@@ -227,7 +227,7 @@ export class ModuleConverter {
 
   private _removeReflectionFromProject(container: ContainerReflection): void {
     // if the container is now empty, remove it from the project
-    CommentPlugin.removeReflection(this._project, container);
+    this._project.removeReflection(container);
 
     // Also, remove it from the project's group
     let projectGroup = this._project.groups[0];

@@ -5,7 +5,7 @@
   "flags": {},
   "children": [
     {
-      "id": 7,
+      "id": 8,
       "name": "Some module name",
       "kind": 1,
       "kindString": "External module",
@@ -18,7 +18,7 @@
       },
       "children": [
         {
-          "id": 6,
+          "id": 7,
           "name": "ModuleClass",
           "kind": 128,
           "kindString": "Class",
@@ -89,7 +89,7 @@
         {
           "title": "Classes",
           "kind": 128,
-          "children": [6]
+          "children": [7]
         }
       ],
       "sources": [
@@ -105,7 +105,7 @@
     {
       "title": "External modules",
       "kind": 1,
-      "children": [7]
+      "children": [8]
     }
   ]
 }

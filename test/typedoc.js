@@ -12,5 +12,6 @@ module.exports = {
   baseUrl: "src/main/ts",
   json: "test/dist/docs.json",
 
+  ignoreCompilerErrors: true,
   hideGenerator: true
 };
