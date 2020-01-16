@@ -4,7 +4,7 @@ import { Converter } from "typedoc/dist/lib/converter/converter";
 import { Context } from "typedoc/dist/lib/converter/context";
 import { CommentPlugin } from "typedoc/dist/lib/converter/plugins/CommentPlugin";
 import { parseComment } from "typedoc/dist/lib/converter/factories/comment";
-import { ModuleConverter } from "./moduleConverter";
+import { ModuleConverter } from "./ModuleConverter";
 import * as ts from "typescript";
 import { Comment } from "typedoc/dist/lib/models";
 
