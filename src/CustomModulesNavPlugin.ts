@@ -3,12 +3,12 @@ import { Component, RendererComponent } from "typedoc/dist/lib/output/components
 import { RendererEvent, PageEvent } from 'typedoc/dist/lib/output/events';
 
 /**
- * A plugin that exposes the navigation structure of the documentation
- * to the rendered templates.
+ * This is necessary for the navigation structures of top-level declarations
+ * to render properly.  See https://github.com/convergencelabs/typedoc-plugin-custom-modules/issues/1
  *
- * The navigation structure is generated using the current themes
- * [[BaseTheme.getNavigation]] function. This plugins takes care that the navigation
- * is updated and passed to the render context.
+ * Unfortunately there is a lot of duplicated code from the original
+ * [NavigationPlugin](https://github.com/TypeStrong/typedoc/blob/master/src/lib/output/plugins/NavigationPlugin.ts),
+ * so changes to that will need to be merged into this as well.
  */
 @Component({name: 'navigation'})
 export class CustomModulesNavPlugin extends RendererComponent {

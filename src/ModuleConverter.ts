@@ -9,7 +9,6 @@ import {
 } from "typedoc";
 import { Comment } from "typedoc/dist/lib/models";
 import { Context } from "typedoc/dist/lib/converter/context";
-import { CommentPlugin } from "typedoc/dist/lib/converter/plugins/CommentPlugin";
 import { GroupPlugin } from "typedoc/dist/lib/converter/plugins";
 
 export class ModuleConverter {
