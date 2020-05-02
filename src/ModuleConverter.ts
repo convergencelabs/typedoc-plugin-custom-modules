@@ -84,7 +84,7 @@ export class ModuleConverter {
           );
           // NOTE: The below definition isn't correct: there are some missing attributes
           // and especially the groups section doesn't get created.
-          moduleReflection = new DeclarationReflection(moduleName, ReflectionKind.ExternalModule, project);
+          moduleReflection = new DeclarationReflection(moduleName, ReflectionKind.Module, project);
           moduleReflection.parent = project;
           moduleReflection.children = [];
           moduleReflection.setFlag(ReflectionFlag.Exported, true);

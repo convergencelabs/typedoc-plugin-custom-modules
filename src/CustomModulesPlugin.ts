@@ -45,7 +45,7 @@ export class CustomModulesPlugin extends ConverterComponent {
    * @param node  The node that is currently processed if available.
    */
   private onDeclaration(context: Context, reflection: Reflection, node?: ts.Node) {
-    if (reflection.kindOf(ReflectionKind.ExternalModule) && node) {
+    if (reflection.kindOf(ReflectionKind.Module) && node) {
       // Look through the entire source file, and parse a "comment" from it.
       let comment = CustomModulesPlugin.parseModuleDefinitionComment(node);
       // let comment = parseComment(node.getSourceFile().text);
@@ -57,7 +57,7 @@ export class CustomModulesPlugin extends ConverterComponent {
         // before it.
         let match = /(.+)?[\n\r]?/.exec(tag.text);
 
-        CommentPlugin.removeTags(comment, CustomModulesPlugin.MODULE_DEFINITION_TAG);
+        comment.removeTags(CustomModulesPlugin.MODULE_DEFINITION_TAG);
 
         if (match != null && match.length >= 1) {
           this._converter.addDefinition({
@@ -199,7 +199,7 @@ export class CustomModulesPlugin extends ConverterComponent {
     // remove the @module tag. If this makes the comment empty, delete it
     // as well.
     if (moduleName) {
-      CommentPlugin.removeTags(comment, CustomModulesPlugin.MODULE_TAG);
+      comment.removeTags(CustomModulesPlugin.MODULE_TAG);
       if (comment.shortText == null || comment.shortText.length === 0) {
         delete reflection.comment;
       }

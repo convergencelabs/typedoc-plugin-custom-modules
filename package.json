@@ -33,7 +33,7 @@
     "mocha": "^6.2.2",
     "ts-node": "^8.4.1",
     "tslint": "^6.0.0-beta0",
-    "typedoc": "^0.16.5",
-    "typescript": "3.7.x"
+    "typedoc": "^0.17.6",
+    "typescript": "^3.8.3"
   }
 }
