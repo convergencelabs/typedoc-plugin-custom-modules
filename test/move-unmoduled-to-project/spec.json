@@ -5,7 +5,7 @@
   "flags": {},
   "children": [
     {
-      "id": 2,
+      "id": 11,
       "name": "Module",
       "kind": 1,
       "kindString": "Module",
@@ -15,7 +15,7 @@
       "originalName": "%BASE_URL%/%DIR%/mod1/index.ts",
       "children": [
         {
-          "id": 4,
+          "id": 2,
           "name": "Stuff",
           "kind": 128,
           "kindString": "Class",
@@ -35,7 +35,7 @@
         {
           "title": "Classes",
           "kind": 128,
-          "children": [4]
+          "children": [2]
         }
       ],
       "sources": [
@@ -47,7 +47,7 @@
       ]
     },
     {
-      "id": 5,
+      "id": 3,
       "name": "AlsoTotallyUnmoduled",
       "kind": 256,
       "kindString": "Interface",
@@ -56,7 +56,7 @@
       },
       "children": [
         {
-          "id": 6,
+          "id": 4,
           "name": "really",
           "kind": 1024,
           "kindString": "Property",
@@ -80,7 +80,7 @@
         {
           "title": "Properties",
           "kind": 1024,
-          "children": [6]
+          "children": [4]
         }
       ],
       "sources": [
@@ -92,7 +92,7 @@
       ]
     },
     {
-      "id": 7,
+      "id": 5,
       "name": "notInAModule",
       "kind": 64,
       "kindString": "Function",
@@ -101,7 +101,7 @@
       },
       "signatures": [
         {
-          "id": 8,
+          "id": 6,
           "name": "notInAModule",
           "kind": 4096,
           "kindString": "Call signature",
@@ -127,17 +127,17 @@
     {
       "title": "Modules",
       "kind": 1,
-      "children": [2]
+      "children": [11]
     },
     {
       "title": "Functions",
       "kind": 64,
-      "children": [7]
+      "children": [5]
     },
     {
       "title": "Interfaces",
       "kind": 256,
-      "children": [5]
+      "children": [3]
     }
   ]
 }

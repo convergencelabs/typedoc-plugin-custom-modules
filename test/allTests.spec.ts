@@ -1,4 +1,4 @@
-import { Application, normalizePath, resetReflectionID, ProjectReflection } from "typedoc";
+import { Application, normalizePath, resetReflectionID, ProjectReflection, TSConfigReader } from "typedoc";
 import * as fs from "fs";
 import * as Path from "path";
 import Assert = require("assert");
@@ -26,6 +26,7 @@ describe("Converter", () => {
   });
 
   let app = new Application();
+  app.options.addReader(new TSConfigReader());
   app.bootstrap(testConfig);
 
   fs.readdirSync(base).forEach(directory => {
@@ -49,7 +50,7 @@ describe("Converter", () => {
       it(`${directory} matches specs`, () => {
         const specs = JSON.parse(fs.readFileSync(Path.join(path, `spec.json`), "utf-8"));
         let normalizedResult = normalizeSerialized(app.serializer.toObject(result), directory);
-        Assert.deepStrictEqual(normalizedResult, specs);
+        Assert.deepStrictEqual(specs, normalizedResult);
       });
     });
   });

@@ -27,7 +27,7 @@
           },
           "children": [
             {
-              "id": 3,
+              "id": 4,
               "name": "constructor",
               "kind": 512,
               "kindString": "Constructor",
@@ -36,7 +36,7 @@
               },
               "signatures": [
                 {
-                  "id": 4,
+                  "id": 5,
                   "name": "new EntryPoint",
                   "kind": 16384,
                   "kindString": "Constructor signature",
@@ -45,7 +45,7 @@
                   },
                   "parameters": [
                     {
-                      "id": 5,
+                      "id": 6,
                       "name": "params",
                       "kind": 32768,
                       "kindString": "Parameter",
@@ -59,7 +59,7 @@
                     }
                   ],
                   "type": {
-                    "type": "reference",
+										"type": "reference",
                     "name": "EntryPoint",
                     "id": 2
                   }
@@ -74,7 +74,7 @@
               ]
             },
             {
-              "id": 6,
+              "id": 7,
               "name": "num",
               "kind": 262144,
               "kindString": "Accessor",
@@ -83,7 +83,7 @@
               },
               "getSignature": [
                 {
-                  "id": 7,
+                  "id": 8,
                   "name": "__get",
                   "kind": 524288,
                   "kindString": "Get signature",
@@ -109,12 +109,12 @@
             {
               "title": "Constructors",
               "kind": 512,
-              "children": [3]
+              "children": [4]
             },
             {
               "title": "Accessors",
               "kind": 262144,
-              "children": [6]
+              "children": [7]
             }
           ],
           "sources": [
