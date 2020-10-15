@@ -15,6 +15,10 @@ See the [`test/multiple-ancestor-modules`](/test/multiple-ancestor-modules) dire
 
 Inspired by the popular [typedoc-plugin-external-module-name](https://github.com/christopherthielen/typedoc-plugin-external-module-name), but with a slightly different set of requirements. This plugin leverages some improved TypeDoc comment APIs to support spaces within module names.
 
+## Example in the wild
+
+This was originally created to improve the [API Docs for the Convergence Javascript client](https://docs.convergence.io/js-api/). There are hundreds of files in this project, and we needed a way to organize the API docs by subsystem. The "Modules" section in the right sidebar is the result of this. Navigating to a module will only show the code constructs associated with the current module. This makes the docs much more discoverable.
+
 ## Companion theme
 
 See the [companion theme](https://github.com/convergencelabs/typedoc-theme) for an optional, slightly customized version of the default theme with this plugin in mind.
