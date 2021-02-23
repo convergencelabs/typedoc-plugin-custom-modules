@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/convergencelabs/typedoc-plugin-custom-modules.svg?branch=master)](https://travis-ci.org/convergencelabs/typedoc-plugin-custom-modules)
 
-By default, Typedoc (with the `mode="modules"` option) will create a [Module](https://www.typescriptlang.org/docs/handbook/modules.html) ([née "External Module"](https://github.com/TypeStrong/typedoc/issues/109)) for every file with any exported ES6 constructs. This can result in an unmanageable amount of globals, poor discoverability, and difficult navigation. This plugin enables the grouping of these modules by a particular name.
+By default, Typedoc (with the `mode="modules"` option) will create a [Module](https://www.typescriptlang.org/docs/handbook/modules.html) ([née "External Module"](https://github.com/TypeStrong/typedoc/issues/109)) for every file with any exported ES6 constructs. This can result in an unmanageable number of globals, poor discoverability, and difficult navigation. This plugin enables the grouping of these modules by a particular name.
 
 This plugin supports two additional comment tags:
 
